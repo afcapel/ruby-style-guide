@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.version = "0.1.0"
   spec.authors = [ "Alberto Fernandez-Capel" ]
   spec.summary = "Custom RuboCop cops for personal coding conventions"
-  spec.homepage = "https://github.com/afcapel/ruby-style-guide"
+  spec.homepage = "https://github.com/afcapel/rubocop-rules"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1"
 

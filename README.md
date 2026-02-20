@@ -9,7 +9,7 @@ These rules are particularly useful as guardrails for coding agents (Copilot, Cl
 Add to your `Gemfile`:
 
 ```ruby
-gem "rubocop-afcapel", github: "afcapel/ruby-style-guide", require: false
+gem "rubocop-afcapel", github: "afcapel/rubocop-rules", require: false
 ```
 
 Then in your `.rubocop.yml`:
