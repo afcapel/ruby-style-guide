@@ -171,8 +171,6 @@ def weight_change
 end
 ```
 
-Only flags guards that return nil (implicit or explicit). Guards that return a specific value (like `return :error unless valid?`) are left alone, since the rewrite would change behavior.
-
 ## Built-in cop overrides
 
 ### `Layout/ClassStructure`

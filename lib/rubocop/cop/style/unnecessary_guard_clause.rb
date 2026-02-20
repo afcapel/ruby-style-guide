@@ -5,9 +5,9 @@ module RuboCop
     module Style
       # Flags a guard clause followed by a single expression.
       #
-      # When the entire method body is just a guard that returns nil
-      # and one expression, the guard is not a precondition — it *is*
-      # the logic. Write it as a conditional expression instead.
+      # When the entire method body is just a guard and one expression,
+      # the guard is not a precondition — it *is* the logic. Write it
+      # as a conditional expression instead.
       #
       # @example
       #   # bad
@@ -41,30 +41,20 @@ module RuboCop
           return unless statements.size == 2
 
           guard = statements.first
-          return unless nil_guard_clause?(guard)
+          return unless guard_clause?(guard)
 
           add_offense(guard)
         end
 
-        def nil_guard_clause?(node)
+        def guard_clause?(node)
           case node.type
           when :return
-            returns_nil?(node)
+            true
           when :if
-            node.modifier_form? && nil_return_branch?(node)
+            node.modifier_form? && node.if_branch&.return_type?
           else
             false
           end
-        end
-
-        def nil_return_branch?(if_node)
-          ret = if_node.if_branch
-          ret&.return_type? && returns_nil?(ret)
-        end
-
-        def returns_nil?(return_node)
-          return_node.arguments.empty? ||
-            (return_node.arguments.size == 1 && return_node.first_argument.nil_type?)
         end
       end
     end

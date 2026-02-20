@@ -59,13 +59,14 @@ class UnnecessaryGuardClauseTest < Minitest::Test
     RUBY
   end
 
-  def test_allows_guard_returning_non_nil_value
-    assert_no_offenses(<<~RUBY)
+  def test_flags_guard_returning_non_nil_value
+    offenses = assert_offense(<<~RUBY)
       def foo
         return :error unless valid?
         compute
       end
     RUBY
+    assert_equal 2, offenses.first.line
   end
 
   def test_allows_conditional_expression
