@@ -1,3 +1,31 @@
+Layout/ClassStructure:
+  Enabled: true
+  ExpectedOrder:
+    - module_inclusion
+    - constants
+    - association
+    - public_attribute_macros
+    - public_delegate
+    - macros
+    - public_class_methods
+    - initializer
+    - public_methods
+    - protected_attribute_macros
+    - protected_methods
+    - private_attribute_macros
+    - private_delegate
+    - private_methods
+  Categories:
+    module_inclusion:
+      - include
+      - prepend
+      - extend
+    association:
+      - has_many
+      - has_one
+      - belongs_to
+      - has_and_belongs_to_many
+
 Afcapel/NoBangMethodWithoutCounterpart:
   Enabled: true
   Description: "Do not define a bang method without a non-bang counterpart in the same file."
