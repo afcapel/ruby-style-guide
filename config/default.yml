@@ -41,3 +41,7 @@ Style/NoEarlyReturn:
 Style/NoNestedConditional:
   Enabled: true
   Description: "Avoid nested conditionals. Break down the method and keep branches at the same level of abstraction."
+
+Style/UnnecessaryGuardClause:
+  Enabled: true
+  Description: "Use a conditional expression instead of a guard clause when the method body is a single expression."
