@@ -30,34 +30,8 @@ Code should read like a newspaper article — headline first, synopsis, then det
 This idea comes from Robert C. Martin's *Clean Code* (Chapter 5: Formatting — "The Newspaper Metaphor" and "Vertical Ordering").
 
 ```ruby
-# bad — forces the reader to jump around
+# bad — helpers defined before the method that calls them
 class OrderProcessor
-  private
-
-  def check_inventory(order)
-    # Why is this first?
-  end
-
-  public
-
-  def process(order)
-    # Now I have to scroll up to find check_inventory
-    validate_order(order)
-    charge_customer(order)
-    send_confirmation(order)
-  end
-end
-
-# good — reads top to bottom
-class OrderProcessor
-  def process(order)
-    validate_order(order)
-    charge_customer(order)
-    send_confirmation(order)
-  end
-
-  private
-
   def validate_order(order)
     check_inventory(order) if order.valid?
   end
@@ -66,7 +40,24 @@ class OrderProcessor
     # ...
   end
 
-  def send_confirmation(order)
+  def process(order)
+    validate_order(order)
+    charge_customer(order)
+  end
+end
+
+# good — caller first, helpers after
+class OrderProcessor
+  def process(order)
+    validate_order(order)
+    charge_customer(order)
+  end
+
+  def validate_order(order)
+    check_inventory(order) if order.valid?
+  end
+
+  def charge_customer(order)
     # ...
   end
 
