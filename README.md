@@ -23,63 +23,76 @@ All cops are enabled by default.
 
 ### `Layout/NewspaperMethodOrder`
 
-Methods must be defined after all the methods that call them — high-level intent first, implementation details last.
+Organize code top-to-bottom so it reads like a newspaper — high-level intent first, implementation details last. You should be able to read a class from top to bottom and understand the story without jumping around.
+
+A method should read like a paragraph. When it calls another method, that method should appear below it — creating a natural drill-down from intent to implementation.
+
+This cop flags a method when any of its callers (within the same class or module) appears after it. The method should be defined after all of its callers.
 
 ```ruby
-# bad
-class Order
-  def validate
-    check_inventory
+# bad — forces the reader to jump around
+class OrderProcessor
+  private
+
+  def check_inventory(order)
+    # Why is this first?
   end
 
-  def process
-    validate
-    charge
-  end
+  public
 
-  def check_inventory
-    # ...
-  end
-
-  def charge
-    # ...
+  def process(order)
+    # Now I have to scroll up to find check_inventory
+    validate_order(order)
+    charge_customer(order)
+    send_confirmation(order)
   end
 end
 
-# good
-class Order
-  def process
-    validate
-    charge
+# good — reads top to bottom
+class OrderProcessor
+  def process(order)
+    validate_order(order)
+    charge_customer(order)
+    send_confirmation(order)
   end
 
-  def validate
-    check_inventory
+  private
+
+  def validate_order(order)
+    check_inventory(order) if order.valid?
   end
 
-  def charge
+  def charge_customer(order)
     # ...
   end
 
-  def check_inventory
+  def send_confirmation(order)
     # ...
+  end
+
+  def check_inventory(order)
+    # called by validate_order, so it comes after
   end
 end
 ```
 
-Circular call chains are skipped. Methods with no internal callers are ignored.
+The payoff is faster comprehension and less cognitive load. If you find yourself scrolling up to find where a helper is defined, the code isn't ordered correctly.
+
+Circular call chains are skipped. Methods with no internal callers (public API entry points, callbacks, etc.) are ignored.
 
 ### `Naming/NoBangMethodWithoutCounterpart`
 
-A bang method (`def foo!`) requires a non-bang counterpart (`def foo`) in the same file.
+Only add bang methods (ending in `!`) when there's a non-bang alternative with different behavior. A bang method implies a non-bang alternative exists — `save!` makes sense because `save` exists with different behavior (returns false vs raises). Defining `process!` when there's no `process` counterpart is misleading.
+
+This cop flags bang method definitions (`def foo!`) when no non-bang counterpart (`def foo`) exists in the same file.
 
 ```ruby
-# bad
+# bad — no `process` defined, the `!` is misleading
 def process!
   do_work or raise
 end
 
-# good
+# good — both variants exist, the `!` signals different behavior
 def process
   do_work
 end
@@ -91,27 +104,41 @@ end
 
 ### `Style/NoEarlyReturn`
 
-Guard clauses at the top of a method are fine. All other `return` statements are flagged.
+Early returns work well as guard clauses at the beginning of methods. In method bodies, prefer conditional expressions for clarity. This cop allows guard clauses at the top of a method and flags all other `return` statements.
+
+A guard clause is a leading `return`, `return value`, `return if cond`, or `return unless cond` in modifier form. Once a non-guard statement is encountered, all subsequent `return` nodes anywhere in the method body are offenses.
 
 ```ruby
-# good
+# good — guard clauses at the top
 def foo
   return if invalid?
   return unless authorized?
   compute_result
 end
 
-# bad
+# bad — return after logic
 def foo
   result = compute
   return result if result.valid?
   default_value
 end
+
+# good — use a conditional expression instead
+def foo
+  result = compute
+  if result.valid?
+    result
+  else
+    default_value
+  end
+end
 ```
 
 ## Built-in cop overrides
 
-This gem also enables `Layout/ClassStructure` with a standard ordering: includes, constants, associations, macros, class methods, initializer, public methods, protected methods, private methods.
+### `Layout/ClassStructure`
+
+Enabled with a standard ordering that enforces consistent class layout: includes, constants, associations, macros, class methods, initializer, public methods, protected methods, private methods. This ensures the public interface comes first (what the class does) with private helpers at the bottom.
 
 ## Development
 
