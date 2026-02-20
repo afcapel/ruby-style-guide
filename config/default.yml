@@ -26,6 +26,10 @@ Layout/ClassStructure:
       - belongs_to
       - has_and_belongs_to_many
 
+Afcapel/NewspaperMethodOrder:
+  Enabled: true
+  Description: "Define methods after the methods that call them, not before."
+
 Afcapel/NoBangMethodWithoutCounterpart:
   Enabled: true
   Description: "Do not define a bang method without a non-bang counterpart in the same file."
