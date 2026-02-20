@@ -23,11 +23,9 @@ All cops are enabled by default.
 
 ### `Layout/NewspaperMethodOrder`
 
-Organize code top-to-bottom so it reads like a newspaper — high-level intent first, implementation details last. You should be able to read a class from top to bottom and understand the story without jumping around.
+Code should read like a newspaper article — headline first, synopsis, then details as you read down. You should be able to read a class from top to bottom and understand the story without jumping around. When a method calls another method, that method should appear below it, creating a natural drill-down from intent to implementation. If you find yourself scrolling up to find where a helper is defined, the code isn't ordered correctly.
 
-A method should read like a paragraph. When it calls another method, that method should appear below it — creating a natural drill-down from intent to implementation.
-
-This cop flags a method when any of its callers (within the same class or module) appears after it. The method should be defined after all of its callers.
+This idea comes from Robert C. Martin's *Clean Code* (Chapter 5: Formatting — "The Newspaper Metaphor" and "Vertical Ordering").
 
 ```ruby
 # bad — forces the reader to jump around
@@ -76,15 +74,11 @@ class OrderProcessor
 end
 ```
 
-The payoff is faster comprehension and less cognitive load. If you find yourself scrolling up to find where a helper is defined, the code isn't ordered correctly.
-
-Circular call chains are skipped. Methods with no internal callers (public API entry points, callbacks, etc.) are ignored.
-
 ### `Naming/NoBangMethodWithoutCounterpart`
 
-Only add bang methods (ending in `!`) when there's a non-bang alternative with different behavior. A bang method implies a non-bang alternative exists — `save!` makes sense because `save` exists with different behavior (returns false vs raises). Defining `process!` when there's no `process` counterpart is misleading.
+In the Ruby standard library, bang methods signal a more dangerous variant of a quieter counterpart: `sort` returns a new array, `sort!` mutates in place; `save` returns false on failure, `save!` raises. The `!` is a contract — it tells the reader "there's a safer alternative."
 
-This cop flags bang method definitions (`def foo!`) when no non-bang counterpart (`def foo`) exists in the same file.
+Defining a bang method without its counterpart breaks that contract. If there's only `process!` and no `process`, the `!` is meaningless noise. Either the method isn't dangerous enough to warrant it, or the non-bang variant is missing.
 
 ```ruby
 # bad — no `process` defined, the `!` is misleading
@@ -104,9 +98,9 @@ end
 
 ### `Style/NoEarlyReturn`
 
-Early returns work well as guard clauses at the beginning of methods. In method bodies, prefer conditional expressions for clarity. This cop allows guard clauses at the top of a method and flags all other `return` statements.
+Early returns in the middle of a method obscure the logical flow. When a method has multiple exit points scattered through its body, you have to mentally trace every path to understand what it does. Conditional expressions make all branches explicit and keep them at the same level of abstraction — you can see the full decision tree in one place.
 
-A guard clause is a leading `return`, `return value`, `return if cond`, or `return unless cond` in modifier form. Once a non-guard statement is encountered, all subsequent `return` nodes anywhere in the method body are offenses.
+Guard clauses at the top of a method are the exception. They handle preconditions upfront and let the reader focus on the main logic without nesting. Once the guards are done, the rest of the method should flow without surprise exits.
 
 ```ruby
 # good — guard clauses at the top
@@ -116,14 +110,14 @@ def foo
   compute_result
 end
 
-# bad — return after logic
+# bad — return in the middle obscures the flow
 def foo
   result = compute
   return result if result.valid?
   default_value
 end
 
-# good — use a conditional expression instead
+# good — explicit branches at the same level of abstraction
 def foo
   result = compute
   if result.valid?
@@ -138,7 +132,7 @@ end
 
 ### `Layout/ClassStructure`
 
-Enabled with a standard ordering that enforces consistent class layout: includes, constants, associations, macros, class methods, initializer, public methods, protected methods, private methods. This ensures the public interface comes first (what the class does) with private helpers at the bottom.
+Enforces a consistent class layout: includes, constants, associations, macros, class methods, initializer, public methods, protected methods, private methods. The public interface comes first (what the class does), private helpers go at the bottom.
 
 ## Development
 
