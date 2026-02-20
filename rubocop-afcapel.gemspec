@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1"
 
-  spec.files = Dir["lib/**/*", "config/**/*", "LICENSE", "README.md"]
+  spec.files = Dir["lib/**/*", "config/**/*", "rubocop.yml", "LICENSE", "README.md"]
 
   spec.add_dependency "rubocop", ">= 1.0"
   spec.add_dependency "rubocop-rails-omakase"

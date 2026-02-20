@@ -12,14 +12,12 @@ Add to your `Gemfile`:
 gem "rubocop-afcapel", github: "afcapel/rubocop-rules", require: false
 ```
 
-Then in your `.rubocop.yml`:
+Then in your `.rubocop.yml`, inherit from the gem. This gives you rubocop-rails-omakase plus all custom cops enabled — no need to inherit from omakase separately:
 
 ```yaml
-require:
-  - rubocop-afcapel
+inherit_gem:
+  rubocop-afcapel: rubocop.yml
 ```
-
-All cops are enabled by default.
 
 ## Cops
 
