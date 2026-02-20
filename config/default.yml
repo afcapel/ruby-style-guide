@@ -1,0 +1,7 @@
+Afcapel/NoBangMethodWithoutCounterpart:
+  Enabled: true
+  Description: "Do not define a bang method without a non-bang counterpart in the same file."
+
+Afcapel/NoEarlyReturn:
+  Enabled: true
+  Description: "Disallow early returns in method bodies (guard clauses are OK)."
