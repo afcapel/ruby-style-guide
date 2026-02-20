@@ -1,6 +1,8 @@
-# rubocop-afcapel
+# Ruby Style Guide
 
-Custom [RuboCop](https://rubocop.org/) cops for personal coding conventions.
+[RuboCop](https://rubocop.org/) extension that builds on top of [rubocop-rails-omakase](https://github.com/rails/rubocop-rails-omakase) with additional cops for code structure and readability.
+
+These rules are particularly useful as guardrails for coding agents (Copilot, Claude Code, Cursor, etc.), which tend to define helpers before their callers, sprinkle early returns through method bodies, and add unnecessary bang methods. Static analysis catches these patterns automatically during CI, so you don't have to flag them in review.
 
 ## Installation
 
