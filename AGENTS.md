@@ -19,16 +19,18 @@ bundle exec rubocop      # lint
 ## Architecture
 
 - `lib/rubocop-afcapel.rb` — entry point; requires cops and injects `config/default.yml` into RuboCop defaults
-- `lib/rubocop/cop/afcapel/` — cop implementations, one file per cop
+- `lib/rubocop/cop/{layout,naming,style}/` — cop implementations, one file per cop, organized by RuboCop department
 - `config/default.yml` — default enabled/disabled state for each cop, plus built-in cop overrides
-- `test/rubocop/cop/afcapel/` — tests mirror the cop directory structure
+- `rubocop.yml` — shipped config that inherits `rubocop-rails-omakase` and re-enables all custom cops (omakase blanket-disables departments)
+- `test/rubocop/cop/` — tests mirror the cop directory structure
 
 ## Adding a new cop
 
-1. Create `lib/rubocop/cop/afcapel/<cop_name>.rb` under `RuboCop::Cop::Afcapel`
+1. Create `lib/rubocop/cop/<department>/<cop_name>.rb` under `RuboCop::Cop::<Department>`
 2. Add a `require_relative` in `lib/rubocop-afcapel.rb`
 3. Add an entry in `config/default.yml`
-4. Add tests in `test/rubocop/cop/afcapel/<cop_name>_test.rb`
+4. Re-enable the cop in `rubocop.yml` (needed because omakase disables entire departments)
+5. Add tests in `test/rubocop/cop/<department>/<cop_name>_test.rb`
 
 ## Testing conventions
 
@@ -52,6 +54,18 @@ Flags bang method definitions (`def foo!`) when no non-bang counterpart (`def fo
 Guard clauses at the top of a method are fine. All other `return` statements are flagged.
 
 A guard clause is a leading `return`, `return value`, `return if cond`, or `return unless cond` in modifier form. Once a non-guard statement is encountered, all subsequent `return` nodes anywhere in the method body are offenses.
+
+### `Style/NoNestedConditional`
+
+Flags `if`/`unless` nested inside another `if`/`unless`. `elsif` chains are not considered nested. Ternaries and conditionals inside blocks are ignored (blocks create a scope boundary).
+
+### `Style/UnnecessaryGuardClause`
+
+Two patterns are flagged:
+- **Single guard + single expression**: the guard isn't a precondition, it *is* the logic. Write as a conditional expression.
+- **Two or more leading guard clauses**: combine the conditions or restructure the method.
+
+A single guard before multiple statements is allowed — that's a legitimate precondition.
 
 ### Built-in cop overrides
 
