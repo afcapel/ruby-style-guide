@@ -47,28 +47,28 @@ module RuboCop
           body = node.body
           return unless body
 
-          guard_returns = find_guard_returns(body)
+          guard_return_ids = find_guard_return_ids(body)
 
           body.each_descendant(:return) do |return_node|
-            next if guard_returns.include?(return_node)
+            next if guard_return_ids.include?(return_node.object_id)
 
             add_offense(return_node)
           end
         end
 
-        def find_guard_returns(body)
-          guards = Set.new
+        def find_guard_return_ids(body)
+          ids = Set.new
           statements = body.begin_type? ? body.children : [ body ]
 
           statements.each do |statement|
             if guard_clause?(statement)
-              guards << extract_return(statement)
+              ids << extract_return(statement).object_id
             else
               break
             end
           end
 
-          guards
+          ids
         end
 
         def guard_clause?(statement)

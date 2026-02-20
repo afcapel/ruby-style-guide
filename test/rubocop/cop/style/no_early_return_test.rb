@@ -135,4 +135,16 @@ class NoEarlyReturnTest < Minitest::Test
       end
     RUBY
   end
+
+  def test_flags_structurally_identical_return_after_guard
+    offenses = assert_offense(<<~RUBY)
+      def foo
+        return nil unless bar
+        compute
+        return nil unless baz
+        result
+      end
+    RUBY
+    assert_equal 4, offenses.first.line
+  end
 end
