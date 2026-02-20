@@ -2,7 +2,7 @@
 
 module RuboCop
   module Cop
-    module Afcapel
+    module Naming
       # Flags bang method definitions (`def foo!`) when no non-bang
       # counterpart (`def foo`) exists in the same file.
       #

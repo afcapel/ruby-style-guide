@@ -6,7 +6,7 @@ class NoBangMethodWithoutCounterpartTest < Minitest::Test
   include CopTestHelper
 
   def cop
-    @cop ||= RuboCop::Cop::Afcapel::NoBangMethodWithoutCounterpart.new
+    @cop ||= RuboCop::Cop::Naming::NoBangMethodWithoutCounterpart.new
   end
 
   def test_flags_bang_method_without_counterpart

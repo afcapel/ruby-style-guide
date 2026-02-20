@@ -6,7 +6,7 @@ class NewspaperMethodOrderTest < Minitest::Test
   include CopTestHelper
 
   def cop
-    @cop ||= RuboCop::Cop::Afcapel::NewspaperMethodOrder.new
+    @cop ||= RuboCop::Cop::Layout::NewspaperMethodOrder.new
   end
 
   def test_flags_helper_defined_before_its_only_caller

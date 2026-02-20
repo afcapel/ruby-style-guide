@@ -21,7 +21,7 @@ All cops are enabled by default.
 
 ## Cops
 
-### `Afcapel/NewspaperMethodOrder`
+### `Layout/NewspaperMethodOrder`
 
 Methods must be defined after all the methods that call them — high-level intent first, implementation details last.
 
@@ -69,7 +69,7 @@ end
 
 Circular call chains are skipped. Methods with no internal callers are ignored.
 
-### `Afcapel/NoBangMethodWithoutCounterpart`
+### `Naming/NoBangMethodWithoutCounterpart`
 
 A bang method (`def foo!`) requires a non-bang counterpart (`def foo`) in the same file.
 
@@ -89,7 +89,7 @@ def process!
 end
 ```
 
-### `Afcapel/NoEarlyReturn`
+### `Style/NoEarlyReturn`
 
 Guard clauses at the top of a method are fine. All other `return` statements are flagged.
 

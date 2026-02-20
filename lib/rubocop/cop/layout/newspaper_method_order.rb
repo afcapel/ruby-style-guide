@@ -2,7 +2,7 @@
 
 module RuboCop
   module Cop
-    module Afcapel
+    module Layout
       # Checks that methods are defined after the methods that call them,
       # following the "newspaper" order: high-level intent first,
       # implementation details last.

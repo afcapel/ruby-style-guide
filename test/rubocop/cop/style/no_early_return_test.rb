@@ -6,7 +6,7 @@ class NoEarlyReturnTest < Minitest::Test
   include CopTestHelper
 
   def cop
-    @cop ||= RuboCop::Cop::Afcapel::NoEarlyReturn.new
+    @cop ||= RuboCop::Cop::Style::NoEarlyReturn.new
   end
 
   def test_allows_guard_clause_return_if

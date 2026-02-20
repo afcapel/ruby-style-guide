@@ -2,7 +2,7 @@
 
 module RuboCop
   module Cop
-    module Afcapel
+    module Style
       # Disallow early returns in method bodies.
       #
       # Guard clauses at the beginning of a method are allowed.

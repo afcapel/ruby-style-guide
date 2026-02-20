@@ -39,15 +39,15 @@ bundle exec rubocop      # lint
 
 ## Cops
 
-### `Afcapel/NewspaperMethodOrder`
+### `Layout/NewspaperMethodOrder`
 
 Methods must be defined after all the methods that call them. High-level intent first, implementation details last. Circular call chains are skipped. Methods with no internal callers (public API, callbacks) are ignored.
 
-### `Afcapel/NoBangMethodWithoutCounterpart`
+### `Naming/NoBangMethodWithoutCounterpart`
 
 Flags bang method definitions (`def foo!`) when no non-bang counterpart (`def foo`) exists in the same file. A bang method implies a quieter alternative exists.
 
-### `Afcapel/NoEarlyReturn`
+### `Style/NoEarlyReturn`
 
 Guard clauses at the top of a method are fine. All other `return` statements are flagged.
 

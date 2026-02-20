@@ -26,14 +26,14 @@ Layout/ClassStructure:
       - belongs_to
       - has_and_belongs_to_many
 
-Afcapel/NewspaperMethodOrder:
+Layout/NewspaperMethodOrder:
   Enabled: true
   Description: "Define methods after the methods that call them, not before."
 
-Afcapel/NoBangMethodWithoutCounterpart:
+Naming/NoBangMethodWithoutCounterpart:
   Enabled: true
   Description: "Do not define a bang method without a non-bang counterpart in the same file."
 
-Afcapel/NoEarlyReturn:
+Style/NoEarlyReturn:
   Enabled: true
   Description: "Disallow early returns in method bodies (guard clauses are OK)."
