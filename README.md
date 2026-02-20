@@ -125,7 +125,7 @@ end
 
 Nested conditionals add layers of indirection that make the logic harder to follow. Each level of nesting forces the reader to keep track of more context. When branches are nested, they operate at different levels of abstraction — the outer branch sets up a context that the inner branch refines, which makes it hard to see the full decision tree at a glance.
 
-Break down the method so that both branches of a conditional are at the same level of abstraction. Guard clauses and extracted methods are the usual tools for flattening nested conditionals.
+Break down the method so that both branches of a conditional are at the same level of abstraction. Combine conditions, extract methods, or restructure the logic.
 
 ```ruby
 # bad — nested conditionals at different abstraction levels
@@ -137,11 +137,9 @@ def process(order)
   end
 end
 
-# good — guard clauses flatten the structure
+# good — combine the conditions
 def process(order)
-  return unless order.valid?
-  return unless order.paid?
-  ship(order)
+  ship(order) if order.valid? && order.paid?
 end
 
 # good — extracted method keeps branches at the same level
