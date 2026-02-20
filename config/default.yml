@@ -37,3 +37,7 @@ Naming/NoBangMethodWithoutCounterpart:
 Style/NoEarlyReturn:
   Enabled: true
   Description: "Disallow early returns in method bodies (guard clauses are OK)."
+
+Style/NoNestedConditional:
+  Enabled: true
+  Description: "Avoid nested conditionals. Break down the method and keep branches at the same level of abstraction."

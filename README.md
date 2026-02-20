@@ -121,6 +121,41 @@ def foo
 end
 ```
 
+### `Style/NoNestedConditional`
+
+Nested conditionals add layers of indirection that make the logic harder to follow. Each level of nesting forces the reader to keep track of more context. When branches are nested, they operate at different levels of abstraction — the outer branch sets up a context that the inner branch refines, which makes it hard to see the full decision tree at a glance.
+
+Break down the method so that both branches of a conditional are at the same level of abstraction. Guard clauses and extracted methods are the usual tools for flattening nested conditionals.
+
+```ruby
+# bad — nested conditionals at different abstraction levels
+def process(order)
+  if order.valid?
+    if order.paid?
+      ship(order)
+    end
+  end
+end
+
+# good — guard clauses flatten the structure
+def process(order)
+  return unless order.valid?
+  return unless order.paid?
+  ship(order)
+end
+
+# good — extracted method keeps branches at the same level
+def process(order)
+  if order.valid?
+    ship_if_paid(order)
+  else
+    handle_invalid(order)
+  end
+end
+```
+
+`elsif` chains are not considered nested. Ternaries and conditionals inside blocks are ignored.
+
 ## Built-in cop overrides
 
 ### `Layout/ClassStructure`
