@@ -156,16 +156,30 @@ end
 
 When a method body is just a guard clause followed by a single expression, the guard is not a precondition — it *is* the logic. The conditional is the essence of the method, and a guard clause adds ceremony without clarity. Write it as a conditional expression instead.
 
+Two or more guard clauses at the top of a method are also flagged — combine the conditions or restructure.
+
 ```ruby
-# bad — the guard is the whole method
+# bad — guard before single expression
 def weight_change
   return nil unless weight_start && weight_end
   (weight_end - weight_start).round(1)
 end
 
-# good — conditional expression, clear and direct
+# good
 def weight_change
   (weight_end - weight_start).round(1) if weight_start && weight_end
+end
+
+# bad — multiple guard clauses
+def process(order)
+  return unless order.valid?
+  return unless order.paid?
+  ship(order)
+end
+
+# good
+def process(order)
+  ship(order) if order.valid? && order.paid?
 end
 ```
 

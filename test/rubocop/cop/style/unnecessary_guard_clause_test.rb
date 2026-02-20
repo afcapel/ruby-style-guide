@@ -9,6 +9,8 @@ class UnnecessaryGuardClauseTest < Minitest::Test
     @cop ||= RuboCop::Cop::Style::UnnecessaryGuardClause.new
   end
 
+  # Single guard + single expression
+
   def test_flags_return_nil_unless_followed_by_single_expression
     offenses = assert_offense(<<~RUBY)
       def weight_change
@@ -29,7 +31,7 @@ class UnnecessaryGuardClauseTest < Minitest::Test
     assert_equal 2, offenses.first.line
   end
 
-  def test_flags_return_if_not_followed_by_single_expression
+  def test_flags_return_if_followed_by_single_expression
     offenses = assert_offense(<<~RUBY)
       def foo
         return if invalid?
@@ -37,26 +39,6 @@ class UnnecessaryGuardClauseTest < Minitest::Test
       end
     RUBY
     assert_equal 2, offenses.first.line
-  end
-
-  def test_flags_return_nil_if_followed_by_single_expression
-    offenses = assert_offense(<<~RUBY)
-      def foo
-        return nil if invalid?
-        compute
-      end
-    RUBY
-    assert_equal 2, offenses.first.line
-  end
-
-  def test_allows_guard_before_multiple_statements
-    assert_no_offenses(<<~RUBY)
-      def process(order)
-        return unless order.valid?
-        charge(order)
-        ship(order)
-      end
-    RUBY
   end
 
   def test_flags_guard_returning_non_nil_value
@@ -67,6 +49,58 @@ class UnnecessaryGuardClauseTest < Minitest::Test
       end
     RUBY
     assert_equal 2, offenses.first.line
+  end
+
+  # Multiple guard clauses
+
+  def test_flags_two_guard_clauses
+    offenses = assert_offense(<<~RUBY, count: 2)
+      def process(order)
+        return unless order.valid?
+        return unless order.paid?
+        ship(order)
+      end
+    RUBY
+    assert_equal 2, offenses.first.line
+    assert_equal 3, offenses.last.line
+  end
+
+  def test_flags_three_guard_clauses
+    offenses = assert_offense(<<~RUBY, count: 3)
+      def process(order)
+        return unless order.valid?
+        return unless order.paid?
+        return unless order.in_stock?
+        ship(order)
+      end
+    RUBY
+    assert_equal 2, offenses.first.line
+    assert_equal 4, offenses.last.line
+  end
+
+  def test_flags_multiple_guards_before_multiple_statements
+    offenses = assert_offense(<<~RUBY, count: 2)
+      def process(order)
+        return unless order.valid?
+        return unless order.paid?
+        charge(order)
+        ship(order)
+      end
+    RUBY
+    assert_equal 2, offenses.first.line
+    assert_equal 3, offenses.last.line
+  end
+
+  # Allowed patterns
+
+  def test_allows_single_guard_before_multiple_statements
+    assert_no_offenses(<<~RUBY)
+      def process(order)
+        return unless order.valid?
+        charge(order)
+        ship(order)
+      end
+    RUBY
   end
 
   def test_allows_conditional_expression
@@ -85,26 +119,6 @@ class UnnecessaryGuardClauseTest < Minitest::Test
     RUBY
   end
 
-  def test_allows_multiple_guards_before_expression
-    assert_no_offenses(<<~RUBY)
-      def foo
-        return unless a
-        return unless b
-        compute
-      end
-    RUBY
-  end
-
-  def test_works_with_class_methods
-    offenses = assert_offense(<<~RUBY)
-      def self.foo
-        return unless condition
-        compute
-      end
-    RUBY
-    assert_equal 2, offenses.first.line
-  end
-
   def test_allows_empty_method
     assert_no_offenses(<<~RUBY)
       def foo
@@ -118,5 +132,15 @@ class UnnecessaryGuardClauseTest < Minitest::Test
         compute
       end
     RUBY
+  end
+
+  def test_works_with_class_methods
+    offenses = assert_offense(<<~RUBY)
+      def self.foo
+        return unless condition
+        compute
+      end
+    RUBY
+    assert_equal 2, offenses.first.line
   end
 end

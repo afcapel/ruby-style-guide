@@ -3,14 +3,17 @@
 module RuboCop
   module Cop
     module Style
-      # Flags a guard clause followed by a single expression.
+      # Flags guard clauses that should be conditional expressions.
       #
-      # When the entire method body is just a guard and one expression,
-      # the guard is not a precondition — it *is* the logic. Write it
-      # as a conditional expression instead.
+      # A single guard followed by a single expression is not a
+      # precondition — the conditional *is* the logic. Write it as
+      # a conditional expression instead.
+      #
+      # Two or more guard clauses at the top of a method should be
+      # combined or the method should be restructured.
       #
       # @example
-      #   # bad
+      #   # bad — guard before single expression
       #   def weight_change
       #     return nil unless weight_start && weight_end
       #     (weight_end - weight_start).round(1)
@@ -20,8 +23,21 @@ module RuboCop
       #   def weight_change
       #     (weight_end - weight_start).round(1) if weight_start && weight_end
       #   end
+      #
+      #   # bad — multiple guard clauses
+      #   def process(order)
+      #     return unless order.valid?
+      #     return unless order.paid?
+      #     ship(order)
+      #   end
+      #
+      #   # good
+      #   def process(order)
+      #     ship(order) if order.valid? && order.paid?
+      #   end
       class UnnecessaryGuardClause < Base
-        MSG = "Use a conditional expression instead of a guard clause when the method body is a single expression."
+        SINGLE_EXPRESSION_MSG = "Use a conditional expression instead of a guard clause when the method body is a single expression."
+        MULTIPLE_GUARDS_MSG = "Avoid multiple guard clauses. Combine conditions or restructure the method."
 
         def on_def(node)
           check(node)
@@ -35,15 +51,33 @@ module RuboCop
 
         def check(node)
           body = node.body
-          return unless body&.begin_type?
+          return unless body
 
-          statements = body.children
-          return unless statements.size == 2
+          statements = body.begin_type? ? body.children : [ body ]
+          guards = leading_guard_clauses(statements)
+          return if guards.empty?
 
-          guard = statements.first
-          return unless guard_clause?(guard)
+          remaining = statements.size - guards.size
 
-          add_offense(guard)
+          if guards.size == 1 && remaining == 1
+            add_offense(guards.first, message: SINGLE_EXPRESSION_MSG)
+          elsif guards.size >= 2
+            guards.each { |g| add_offense(g, message: MULTIPLE_GUARDS_MSG) }
+          end
+        end
+
+        def leading_guard_clauses(statements)
+          guards = []
+
+          statements.each do |stmt|
+            if guard_clause?(stmt)
+              guards << stmt
+            else
+              break
+            end
+          end
+
+          guards
         end
 
         def guard_clause?(node)
