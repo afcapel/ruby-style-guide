@@ -94,10 +94,11 @@ Early returns in the middle of a method obscure the logical flow. When a method 
 Guard clauses at the top of a method are the exception. They handle preconditions upfront and let the reader focus on the main logic without nesting. Once the guards are done, the rest of the method should flow without surprise exits.
 
 ```ruby
-# good — guard clauses at the top
+# good — guard clause at the top
 def foo
   return if invalid?
-  return unless authorized?
+  # substantial logic follows...
+  validate
   compute_result
 end
 
